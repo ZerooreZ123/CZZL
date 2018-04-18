@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>回款率</title>
+  <link rel="stylesheet" href="../../css/base.css">
+  <script src="../../js/baseUntil.js"></script>
+  <script src="../../component/marketing/reimbursementRate.js"></script>
+  <script src="../../html/marketing/paymentData.js"></script>
+  <style>
+    .supplies-wrap{width: 1900px;height: 1024px;display: flex;flex-wrap: wrap;justify-content: space-around;align-content: space-around;margin:0 10px 6px 10px; }
+    .tabBar{display:flex;align-items: center;height:50px;font-size:28px;}
+    .buttonNormal{font-size: 20px;height: 32px;width: 84px;display: flex;align-items: center;justify-content: center;background-color: 
+                rgba(52, 143, 237, 0.15);border-radius: 5px;border: 0px;}
+  </style>
+</head>
+<body>
+  <div class="content" id="root">
+    <div class="tabBar">
+        <a href="../../index.html" style="margin-left:24px;">
+            <img src="../../imgs/marketing/marketing_home.png" />
+            <span>滁州中联</span>
+        </a>
+        <a href="#" class="buttonNormal" style="height: 45px;margin-left:300px;">
+            <span>合同</span>
+        </a>
+        <span style="display:inline-block;margin-left:320px;">片区回款率</span>
+    </div>
+    <div class="supplies-wrap block-bg">
+        <paymentrate :realtimeinfo="paymentrateInfo"></paymentrate>
+    </div>
+  </div>
+  <script>
+    new Vue({
+      el:'#root',
+      components: {
+        'paymentrate':ReimbursementRate,
+      },
+      data: {
+        paymentrateInfo:{},
+      },
+      mounted(){
+        this.paymentRate();
+      },
+      methods: {
+        paymentRate(){
+          const resObj = paymentData.list;
+          const resList = [];
+          console.log(resObj);
+					for (let key in resObj) {
+						resList.push({ title: key, data: resObj[key] });
+					}
+          this.paymentrateInfo = this.transformRealTime(resList[0]);
+        },
+        transformRealTime(itemData){
+          const arr = [];
+          // itemData.forEach(obj => {
+            const barData = itemData.data[0];
+            const parData = itemData.data[1];
+            const temp = [];
+            const name = [];
+
+            barData.forEach(bar => {
+              temp.push(bar.currentAmount)
+              name.push(bar.yctype);
+            });
+            const pies = parData.map(piedata => { // 饼图的数据
+              return { value: piedata.pieValue, name: piedata.pieName };
+            });
+
+            // arr.push({ nameData: name, data: temp, title: obj.title, pie: pies });
+            const resData = { nameData: name, data: temp, title: itemData.title, pie: pies };
+          // })
+          return resData;
+        },
+      }
+    })
+  </script>
+</body>
+</html>
